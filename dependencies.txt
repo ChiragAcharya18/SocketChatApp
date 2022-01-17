@@ -1,0 +1,12 @@
+Dependencies:
+*sqlite3
+*pickle
+*threading
+*getpass
+*stdiomask
+*aess is a encryption module
+*pycryptodome
+
+// 
+Use Python 3.7
+py -3.7 server.py client.py
