@@ -1,6 +1,7 @@
 import sqlite3
 import socket
 import threading
+import datetime
 import pickle
 import aess
 import time
@@ -9,12 +10,38 @@ import os
 host = 'localhost'
 port = 9999
 
+def serverLog(text):
+    if len(text) != 0:
+        try: 
+            f = open("ServerLog.txt", "a")
+
+            if(text == "NewLog"):
+                f.write("\n---------------------------------------------------------------------\n\t\tNEW LOG\n---------------------------------------------------------------------\n \n")
+                f.close()
+                return
+
+            f.write(f"[{datetime.datetime.now()}]: " +text + "\n")
+            f.close()
+        except:
+            print("A log failed ")
+    
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
 s.listen()
 clients = []
 nicknames = []
+users = []
 print("Waiting for a connection... ")
+serverLog("NewLog")
+serverLog("Waiting for a connection... ")
+
+def saveUserDetails(c, port, nickname):
+    for user in users:
+        if user["PORT"] == port:
+            user["Client"] = c
+            user["Nickname"] = nickname
+            serverLog("User Added: " + str(user))
 
 
 def broadcast(message):
@@ -24,9 +51,11 @@ def broadcast(message):
                 client.send(message)
             except Exception as E:
                 print("Broadcast Error: ",E,"for client ",client)
+                serverLog("Broadcast Error: ",E,"for client " + client)
 
 def shutdown():
     print("Server about to shutdown")
+    serverLog("Server about to shutdown")
     message = "ssd"
     broadcast(message.encode('utf-8'))
     time.sleep(15)
@@ -37,6 +66,7 @@ def kickout(m):
     nm = m.split(" ")[-1]
     k = "[admin]: kick " + nm
     print(f"Admin kicked out {nm}")
+    serverLog(f"Admin kicked out {nm}")
     broadcast(k.encode('utf-8'))
 
 
@@ -57,6 +87,7 @@ def handle(client):
             nickname = nicknames[index]
             broadcast(f"{nickname} has left the chat".encode('utf-8'))
             print(f"{nickname} has left the chat!")
+            serverLog(f"{nickname} has left the chat!")
             nicknames.remove(nickname)
             break
 
@@ -65,10 +96,19 @@ def receive():
     while True:
         c, a = s.accept()
         print("Client Connected:  ", str(a))
+        serverLog("Client Connected:  " + str(a))
         try:
+            tempClientInfo = c.recv(1024).decode('utf-8')
+            print("Client Info: " + tempClientInfo + ", PORT: " + str(a[1]))
+            serverLog("Client Info: " + tempClientInfo + ", PORT: " + str(a[1]))
+            user = {}
+            user["ClientInfo"] = tempClientInfo
+            user["PORT"] = str(a[1])
+            users.append(user)
             m1 = c.recv(1024).decode('utf-8')
-        except:
-            print("Some error occurred at receive block.")
+        except Exception as E:
+            print("Some error occurred at receive block Error: " + str(E))
+            serverLog("Some error occurred at receive block Error: " + str(E))
             continue
         if m1 == "login":
             m2 = c.recv(1024)
@@ -85,6 +125,7 @@ def receive():
 
             elif ack == "null":
                 print("Something Went Wrong")
+                serverLog("Something Went Wrong. Client: " + a)
 
         elif m1 == "signup":
             m2 = c.recv(1024)
@@ -109,16 +150,19 @@ def signup(m2):
     except Exception as E:
         if str(E) == "UNIQUE constraint failed: userdetails.username":
             print("Username already exists")
+            serverLog("Username already exists")
             conn.close()
             return "exist"
 
         print("Inserting Data Error: ", E)
+        serverLog("Inserting Data Error: " + E)
         conn.close()
         return "null"
 
 
     conn.commit()
     print(f"{username} Signed Up successfully!")
+    serverLog(f"{username} Signed Up successfully!")
     conn.close()
     x = "allok"
     return x
@@ -138,16 +182,20 @@ def login(m2):
             if cc.fetchone() == None:
                 x = "null"
                 print(f"Login Failed. Username: {username}")
+                serverLog(f"Login Failed. Username: {username}")
             else:
                 x = "allok"
                 print(f"{username} Logged in ")
+                serverLog(f"{username} Logged in ")
 
         except:
             print("Error While Checking for Username And Password in Database")
+            serverLog("Error While Checking for Username And Password in Database")
 
     else:
         x = "loggedin"
         print(f"Somebody tried to login using {username}'s credentials!")
+        serverLog(f"Somebody tried to login using {username}'s credentials!")
 
     conn.commit()
     conn.close()

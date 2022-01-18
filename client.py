@@ -55,8 +55,9 @@ try:
     addrHandle = open(".ServerAddress.txt","r")
     IP = addrHandle.readline().split(":")
     #print(IP)
-    c.connect((IP[0], int(IP[1])))
+    c.connect_ex((IP[0], int(IP[1])))
     print("Connection Established")
+    c.send(f"Host Device Name: {socket.gethostname()}, Host IP Address: {socket.gethostbyname(socket.gethostname())}".encode('utf-8'))
 except:
     print("Something went wrong\nDisconnecting...")
     sys.exit()
@@ -161,7 +162,7 @@ if h == 'L' or h == 'l' or h == " " or h == "":
     print("LOGIN")
     username = input("Enter your username: ")
     try:
-        print(2/0)  #stdiomask doesnt work in pycham so put this exception purposely! If executing in cmd remove/comment this exception!
+        #print(2/0)  #stdiomask doesnt work in pycham so put this exception purposely! If executing in cmd remove/comment this exception!
         password = stdiomask.getpass(prompt='Enter your password: ', mask='*')
     except:
         password = input("Enter your password: ")
@@ -170,7 +171,7 @@ elif h == "S" or h == "s" or h == "  ":
     print("SIGNUP")
     username = input("Enter a username: ")
     try:
-        print(2/0)
+        #print(2/0)
         password = stdiomask.getpass(prompt='Enter Password: ', mask='*')
         p1 = stdiomask.getpass(prompt='Re-enter Password: ', mask='*')
     except:

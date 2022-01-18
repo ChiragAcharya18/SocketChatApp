@@ -1,0 +1,16 @@
+[2022-01-18 14:36:54.522295]: Client Connected:  ('127.0.0.1', 51164)
+[2022-01-18 14:36:54.543300]: Client Info: Host Device Name: LAPTOP-IM1QF5GR, Host IP Address: 192.168.56.1, PORT: 51164
+[2022-01-18 14:36:58.326269]: Error While Checking for Username And Password in Database
+
+---------------------------------------------------------------------
+		NEW LOG
+---------------------------------------------------------------------
+ 
+[2022-01-18 14:37:03.701241]: Waiting for a connection... 
+[2022-01-18 14:37:21.788627]: Client Connected:  ('127.0.0.1', 51177)
+[2022-01-18 14:37:21.805147]: Client Info: Host Device Name: LAPTOP-IM1QF5GR, Host IP Address: 192.168.56.1, PORT: 51177
+[2022-01-18 14:37:38.856887]: admin Signed Up successfully!
+[2022-01-18 14:37:44.156542]: Client Connected:  ('127.0.0.1', 51180)
+[2022-01-18 14:37:44.461970]: Client Info: Host Device Name: LAPTOP-IM1QF5GR, Host IP Address: 192.168.56.1, PORT: 51180
+[2022-01-18 14:37:50.656555]: admin Logged in 
+[2022-01-18 14:38:06.279577]: admin has left the chat!
